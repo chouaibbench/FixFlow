@@ -1,0 +1,153 @@
+import React, { useState } from 'react';
+import { Scan, Search, Ticket as TicketIcon, Factory, Clock } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { toast } from 'sonner';
+
+import { Button } from '../../components/ui/Button';
+import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
+import { QRScanner } from '../../components/QRScanner';
+import { MachineCard } from '../../components/MachineCard';
+import { TicketForm } from '../../components/TicketForm';
+import { Dialog } from '../../components/ui/Dialog';
+
+import { MOCK_MACHINES } from '../../data/mockData';
+import { useTickets } from '../../context/TicketContext';
+import { useAuth } from '../../context/AuthContext';
+
+export const WorkerDashboard = () => {
+  const { user } = useAuth();
+  const { tickets, addTicket } = useTickets();
+  const [machines] = useState(MOCK_MACHINES);
+  const [isScannerOpen, setIsScannerOpen] = useState(false);
+  const [selectedMachine, setSelectedMachine] = useState(null);
+  const [isTicketFormOpen, setIsTicketFormOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredMachines = machines.filter((m) =>
+    m.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    m.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    m.location.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const handleScan = (decodedText) => {
+    const machine = machines.find((m) => m.id === decodedText);
+    if (machine) {
+      setSelectedMachine(machine);
+      setIsScannerOpen(false);
+      setIsTicketFormOpen(true);
+      toast.success(`Machine found: ${machine.name}`);
+    } else {
+      toast.error('Machine not found. Please try again.');
+    }
+  };
+
+  const handleReportIssue = (machine) => {
+    setSelectedMachine(machine);
+    setIsTicketFormOpen(true);
+  };
+
+  const handleSubmitTicket = (data) => {
+    if (!selectedMachine) return;
+    addTicket({
+      machineId: selectedMachine.id,
+      machineName: selectedMachine.name,
+      description: data.description,
+      priority: data.priority,
+      reportedBy: user?.name || 'Unknown Worker',
+      reportedByEmail: user?.email || 'unknown@factory.com',
+    });
+    setIsTicketFormOpen(false);
+    setSelectedMachine(null);
+    toast.success('Ticket submitted successfully!');
+  };
+
+  return (
+    <div className="space-y-8">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight">Report an Issue</h2>
+          <p className="text-slate-500">Scan a machine QR code or select from the list to report a problem.</p>
+        </div>
+        <Button size="lg" className="h-14 gap-2 bg-indigo-600 px-8 text-lg font-bold shadow-xl shadow-indigo-500/20 hover:bg-indigo-700" onClick={() => setIsScannerOpen(true)}>
+          <Scan className="h-6 w-6" />
+          Scan Machine QR
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <Card className="bg-indigo-600 text-white">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium opacity-80">My Reported Tickets</CardTitle>
+            <TicketIcon className="h-4 w-4 opacity-80" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{tickets.length}</div>
+            <p className="text-xs opacity-70">Total submitted by you</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-slate-500">Machines Online</CardTitle>
+            <Factory className="h-4 w-4 text-slate-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">24 / 26</div>
+            <p className="text-xs text-slate-500">92% operational</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-slate-500">Avg. Response Time</CardTitle>
+            <Clock className="h-4 w-4 text-slate-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">45 mins</div>
+            <p className="text-xs text-emerald-500">-10% from last week</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xl font-bold">All Machines</h3>
+          <div className="relative w-full max-w-xs">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Search machines..."
+              className="w-full rounded-full border border-slate-200 bg-white py-2 pl-10 pr-4 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-800 dark:bg-slate-900"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {filteredMachines.map((machine) => (
+            <MachineCard key={machine.id} machine={machine} onReport={handleReportIssue} />
+          ))}
+        </div>
+      </div>
+
+      <AnimatePresence>
+        {isScannerOpen && (
+          <QRScanner onScan={handleScan} onClose={() => setIsScannerOpen(false)} />
+        )}
+      </AnimatePresence>
+
+      <Dialog
+        isOpen={isTicketFormOpen}
+        onClose={() => setIsTicketFormOpen(false)}
+        title="Report Machine Issue"
+        description="Please provide details about the problem you've encountered."
+      >
+        {selectedMachine && (
+          <TicketForm
+            machine={selectedMachine}
+            onSubmit={handleSubmitTicket}
+            onCancel={() => setIsTicketFormOpen(false)}
+          />
+        )}
+      </Dialog>
+    </div>
+  );
+};

@@ -1,0 +1,22 @@
+Project Idea: FixFlow – Factory Maintenance Management System
+
+FixFlow is a digital application designed to manage maintenance operations in a factory.
+
+The main idea is to simplify how workers report machine issues and how technicians handle them using a ticketing system.
+
+Each machine has a unique QR code. When a worker scans the code, a page opens where they can report a problem by filling a simple form (description, priority, optional photo).
+
+Once submitted, a maintenance ticket is created and stored in the system.
+
+Technicians can access a dashboard where they see all tickets. They can manage them and update their status (pending, in progress, resolved).
+
+The system has two main roles:
+
+* Worker: reports issues
+* Technician: manages and resolves tickets
+
+Each machine is identified by an ID, location, and has a maintenance history.
+
+Authentication is role-based, and in the prototype version, session data can be stored using localStorage.
+
+FixFlow helps replace manual processes with a digital workflow, improving communication, tracking, and efficiency in maintenance operations.
