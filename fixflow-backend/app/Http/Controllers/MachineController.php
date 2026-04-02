@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Machine;
 use Illuminate\Http\Request;
 
 class MachineController extends Controller
@@ -11,7 +12,7 @@ class MachineController extends Controller
      */
     public function index()
     {
-        //
+        return response()->json(Machine:all());
     }
 
     /**
@@ -19,7 +20,13 @@ class MachineController extends Controller
      */
     public function store(Request $request)
     {
-        //
+         $request->validate([
+            'name'     => 'required|string',
+            'location' => 'required|string',
+        ]);
+
+        $machine = Machine::create($request->only('name', 'location', 'last_maintenance'));
+        return response()->json($machine, 201);
     }
 
     /**
