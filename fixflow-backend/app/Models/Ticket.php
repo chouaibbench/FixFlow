@@ -4,10 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Machine;
 
 class Ticket extends Model
 {
     use HasFactory;
+
+    protected $table = 'tikets';
 
     protected $fillable = [
         'machine_id',
@@ -21,7 +24,7 @@ class Ticket extends Model
 
     public function machine()
     {
-        return $this->belongsTo('Machine::class');
+        return $this->belongsTo(Machine::class);
     }
 
     public function reporter()

@@ -13,7 +13,7 @@ class AuthController extends Controller
         $request->validate([
             'name'      => 'required|string',
             'email'     => 'required|email|unique:users',
-            'password'  => 'required|main;6',
+            'password'  => 'required|min:6',
             'role'      => 'required|in:worker,technician',
         ]);
 
@@ -29,37 +29,37 @@ class AuthController extends Controller
         return response()->json([
             'user'  => $user,
             'token' => $token,
-        ], 201)
+        ], 201);
     }
 
     public function login(Request $request)
     {
         $request->validate([
-            'email'  => 'required|email',
+            'email'    => 'required|email',
             'password' => 'required',
         ]);
 
         $user = User::where('email', $request->email)->first();
 
-        if (!user || !Hash::check($request->password, $user->password)) {
-            return respons()->json(['message' => 'Invalid credentials'], 401);
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json(['message' => 'Invalid credentials'], 401);
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        return respons()->json([
+        return response()->json([
             'user'  => $user,
             'token' => $token,
         ]);
     }
 
-    public finction logout(Request $request)
+    public function logout(Request $request)
     {
-        $request->user()->()currentAccessToken()->delet();
-        return respnse()->json(['message' => 'Logged out']);
+        $request->user()->currentAccessToken()->delete();
+        return response()->json(['message' => 'Logged out']);
     }
 
-    public function me(Request $resuest)
+    public function me(Request $request)
     {
         return response()->json($request->user());
     }

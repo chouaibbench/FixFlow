@@ -1,55 +1,40 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { MOCK_TICKETS } from '../data/mockData';
+import { api } from '../lib/api';
 
 const TicketContext = createContext(undefined);
 
 export const TicketProvider = ({ children }) => {
   const [tickets, setTickets] = useState([]);
 
+  const fetchTickets = async () => {
+    try {
+      const data = await api.get('/tickets');
+      setTickets(data);
+    } catch (_) {}
+  };
+
   useEffect(() => {
-    const savedTickets = localStorage.getItem('fixflow_tickets');
-    if (savedTickets) {
-      setTickets(JSON.parse(savedTickets));
-    } else {
-      setTickets(MOCK_TICKETS);
-    }
+    fetchTickets();
   }, []);
 
-  useEffect(() => {
-    if (tickets.length > 0) {
-      localStorage.setItem('fixflow_tickets', JSON.stringify(tickets));
-    }
-  }, [tickets]);
-
-  const addTicket = (ticketData) => {
-    const newTicket = {
-      ...ticketData,
-      id: `T-${Math.floor(1000 + Math.random() * 9000)}`,
-      status: 'pending',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+  const addTicket = async (ticketData) => {
+    const newTicket = await api.post('/tickets', ticketData);
     setTickets((prev) => [newTicket, ...prev]);
+    return newTicket;
   };
 
-  const updateTicketStatus = (ticketId, status) => {
-    setTickets((prev) =>
-      prev.map((t) =>
-        t.id === ticketId ? { ...t, status, updatedAt: new Date().toISOString() } : t
-      )
-    );
+  const updateTicketStatus = async (ticketId, status) => {
+    const updated = await api.put(`/tickets/${ticketId}`, { status });
+    setTickets((prev) => prev.map((t) => (t.id === ticketId ? updated : t)));
   };
 
-  const assignTicket = (ticketId, technician) => {
-    setTickets((prev) =>
-      prev.map((t) =>
-        t.id === ticketId ? { ...t, assignedTo: technician, updatedAt: new Date().toISOString() } : t
-      )
-    );
+  const assignTicket = async (ticketId, technician) => {
+    const updated = await api.put(`/tickets/${ticketId}`, { assigned_to: technician });
+    setTickets((prev) => prev.map((t) => (t.id === ticketId ? updated : t)));
   };
 
   return (
-    <TicketContext.Provider value={{ tickets, addTicket, updateTicketStatus, assignTicket }}>
+    <TicketContext.Provider value={{ tickets, addTicket, updateTicketStatus, assignTicket, fetchTickets }}>
       {children}
     </TicketContext.Provider>
   );
@@ -57,8 +42,6 @@ export const TicketProvider = ({ children }) => {
 
 export const useTickets = () => {
   const context = useContext(TicketContext);
-  if (context === undefined) {
-    throw new Error('useTickets must be used within a TicketProvider');
-  }
+  if (context === undefined) throw new Error('useTickets must be used within a TicketProvider');
   return context;
 };

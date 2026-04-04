@@ -12,7 +12,7 @@ class MachineController extends Controller
      */
     public function index()
     {
-        return response()->json(Machine:all());
+        return response()->json(Machine::all());
     }
 
     /**
@@ -32,24 +32,26 @@ class MachineController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Machine $machine)
     {
-        //
+        return response()->json($machine);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Machine $machine)
     {
-        //
+        $machine->update($request->only('name', 'location', 'last_maintenance'));
+        return response()->json($machine);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Machine $machine)
     {
-        //
+        $machine->delete();
+        return response()->json(['message' => 'Deleted']);
     }
 }

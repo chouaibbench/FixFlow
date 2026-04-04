@@ -1,33 +1,35 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { api } from '../lib/api';
 
 const AuthContext = createContext(undefined);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser]       = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const savedUser = localStorage.getItem('fixflow_user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
-    setIsLoading(false);
+    const token = localStorage.getItem('fixflow_token');
+    if (!token) { setIsLoading(false); return; }
+
+    api.get('/me')
+      .then((data) => setUser(data))
+      .catch(() => {
+        localStorage.removeItem('fixflow_token');
+      })
+      .finally(() => setIsLoading(false));
   }, []);
 
-  const login = (role) => {
-    const newUser = {
-      id: `U-${Math.floor(Math.random() * 1000)}`,
-      name: role === 'worker' ? 'John Worker' : 'Mike Technician',
-      email: role === 'worker' ? 'worker@factory.com' : 'tech@factory.com',
-      role,
-    };
-    setUser(newUser);
-    localStorage.setItem('fixflow_user', JSON.stringify(newUser));
+  const login = async (email, password) => {
+    const data = await api.post('/login', { email, password });
+    localStorage.setItem('fixflow_token', data.token);
+    setUser(data.user);
+    return data.user;
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try { await api.post('/logout'); } catch (_) {}
+    localStorage.removeItem('fixflow_token');
     setUser(null);
-    localStorage.removeItem('fixflow_user');
   };
 
   return (
@@ -39,8 +41,6 @@ export const AuthProvider = ({ children }) => {
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
+  if (context === undefined) throw new Error('useAuth must be used within an AuthProvider');
   return context;
 };
