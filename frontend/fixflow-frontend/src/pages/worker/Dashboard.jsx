@@ -17,6 +17,8 @@ export const WorkerDashboard = () => {
   const { user } = useAuth();
   const { tickets, addTicket } = useTickets();
   const { machines } = useMachines();
+  const machinesWithIssues = new Set(tickets.filter(t => t.status !== 'resolved').map(t => t.machine_id));
+  const machinesOnline = machines.length - machinesWithIssues.size;
   const [isScannerOpen, setIsScannerOpen] = useState(false);
   const [selectedMachine, setSelectedMachine] = useState(null);
   const [isTicketFormOpen, setIsTicketFormOpen] = useState(false);
@@ -87,8 +89,8 @@ export const WorkerDashboard = () => {
             <Factory className="h-4 w-4 text-slate-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">24 / 26</div>
-            <p className="text-xs text-slate-500">92% operational</p>
+            <div className="text-2xl font-bold">{machinesOnline} / {machines.length}</div>
+            <p className="text-xs text-slate-500">{machines.length > 0 ? Math.round((machinesOnline / machines.length) * 100) : 0}% operational</p>
           </CardContent>
         </Card>
         <Card>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Ticket as TicketIcon, Factory, Clock, AlertTriangle, CheckCircle2, Settings } from 'lucide-react';
 import { toast } from 'sonner';
+import { useMachines } from '../../context/MachineContext';
 
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '../../components/ui/Card';
 import { Tabs, TabsList, TabsTrigger } from '../../components/ui/Tabs';
@@ -11,7 +12,10 @@ import { cn } from '../../lib/utils';
 import { useTickets } from '../../context/TicketContext';
 
 export const TechnicianDashboard = () => {
+  const { machines } = useMachines();
   const { tickets, updateTicketStatus, assignTicket } = useTickets();
+  const machinesWithIssues = new Set(tickets.filter(t => t.status !== 'resolved').map(t => t.machine_id));
+  const machinesOnline = machines.length - machinesWithIssues.size;
   const [activeTab, setActiveTab] = useState('all');
 
   const filteredTickets = tickets.filter((t) => {
@@ -48,8 +52,8 @@ export const TechnicianDashboard = () => {
             <Factory className="h-4 w-4 text-slate-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">24 / 26</div>
-            <p className="text-xs text-slate-500">92% operational</p>
+            <div className="text-2xl font-bold">{machinesOnline} / {machines.length}</div>
+            <p className="text-xs text-slate-500">{machines.length > 0 ? Math.round((machinesOnline / machines.length) * 100) : 0}% operational</p>
           </CardContent>
         </Card>
         <Card>
@@ -59,7 +63,7 @@ export const TechnicianDashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">2.4 hrs</div>
-            <p className="text-xs text-emerald-500">-15% from last week</p>
+            <p className="text-xs text-emerald-500">based on resolved tickets</p>
           </CardContent>
         </Card>
         <Card>
