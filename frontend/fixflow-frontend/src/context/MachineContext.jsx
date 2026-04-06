@@ -16,10 +16,26 @@ export const MachineProvider = ({ children }) => {
       .catch(() => setMachines([]))
       .finally(() => setIsLoading(false));
   }, [user]);
-  
+
+  const addMachine = async (data) => {
+    const m = await api.post('/machines', data);
+    setMachines((prev) => [...prev, m]);
+    return m;
+  };
+
+  const updateMachine = async (id, data) => {
+    const m = await api.put(`/machines/${id}`, data);
+    setMachines((prev) => prev.map((x) => (x.id === id ? m : x)));
+    return m;
+  };
+
+  const deletMachine = async (id) => {
+    await api.delete(`/machines/${id}`);
+    setMachines((prev) => prev.filter((x) => x.id !== id));
+  };
 
   return (
-    <MachineContext.Provider value={{ machines, isLoading }}>
+    <MachineContext.Provider value={{ machines, isLoading, addMachine, updateMachine, deletMachine }}>
       {children}
     </MachineContext.Provider>
   );

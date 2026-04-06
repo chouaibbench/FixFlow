@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'sonner';
 
+import {MachinesPage} from './pages/technician/Machines'
 import { AuthProvider } from './context/AuthContext';
 import { TicketProvider } from './context/TicketContext';
 import { MachineProvider } from './context/MachineContext';
@@ -44,7 +45,7 @@ const App = () => {
             >
               <Route index element={<Navigate to="/technician/dashboard" replace />} />
               <Route path="dashboard" element={<TechnicianDashboard />} />
-              <Route path="machines" element={<div className="p-8 text-center">Technician Machines View (Coming Soon)</div>} />
+              <Route path="machines" element={<MachinesPage />} />
               <Route path="tickets" element={<div className="p-8 text-center">Technician Tickets View (Coming Soon)</div>} />
               <Route path="team" element={<div className="p-8 text-center">Technician Team View (Coming Soon)</div>} />
               <Route path="settings" element={<div className="p-8 text-center">Technician Settings View (Coming Soon)</div>} />
