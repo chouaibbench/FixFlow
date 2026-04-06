@@ -4,6 +4,7 @@ import { Toaster } from 'sonner';
 
 import { AuthProvider } from './context/AuthContext';
 import { TicketProvider } from './context/TicketContext';
+import { MachineProvider } from './context/MachineContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { WorkerLayout } from './layouts/WorkerLayout';
 import { TechnicianLayout } from './layouts/TechnicianLayout';
@@ -15,6 +16,7 @@ const App = () => {
   return (
     <AuthProvider>
       <TicketProvider>
+        <MachineProvider>
         <Router>
           <Toaster position="top-right" richColors />
           <Routes>
@@ -51,6 +53,7 @@ const App = () => {
             <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>
         </Router>
+        </MachineProvider>
       </TicketProvider>
     </AuthProvider>
   );

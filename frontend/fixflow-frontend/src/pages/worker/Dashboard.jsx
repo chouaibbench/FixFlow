@@ -9,15 +9,14 @@ import { QRScanner } from '../../components/QRScanner';
 import { MachineCard } from '../../components/MachineCard';
 import { TicketForm } from '../../components/TicketForm';
 import { Dialog } from '../../components/ui/Dialog';
-
-import { MOCK_MACHINES } from '../../data/mockData';
 import { useTickets } from '../../context/TicketContext';
 import { useAuth } from '../../context/AuthContext';
+import { useMachines } from '../../context/MachineContext';
 
 export const WorkerDashboard = () => {
   const { user } = useAuth();
   const { tickets, addTicket } = useTickets();
-  const [machines] = useState(MOCK_MACHINES);
+  const { machines } = useMachines();
   const [isScannerOpen, setIsScannerOpen] = useState(false);
   const [selectedMachine, setSelectedMachine] = useState(null);
   const [isTicketFormOpen, setIsTicketFormOpen] = useState(false);
@@ -25,7 +24,7 @@ export const WorkerDashboard = () => {
 
   const filteredMachines = machines.filter((m) =>
     m.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    m.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    String(m.id).includes(searchQuery) ||
     m.location.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -49,12 +48,9 @@ export const WorkerDashboard = () => {
   const handleSubmitTicket = (data) => {
     if (!selectedMachine) return;
     addTicket({
-      machineId: selectedMachine.id,
-      machineName: selectedMachine.name,
+      machine_id:  selectedMachine.id,
       description: data.description,
-      priority: data.priority,
-      reportedBy: user?.name || 'Unknown Worker',
-      reportedByEmail: user?.email || 'unknown@factory.com',
+      priority:    data.priority,
     });
     setIsTicketFormOpen(false);
     setSelectedMachine(null);
