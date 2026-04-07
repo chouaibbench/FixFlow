@@ -3,8 +3,10 @@ import { QRCodeSVG } from 'qrcode.react';
 import { MapPin, Clock, MoreVertical, AlertCircle } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from './ui/Card';
 import { Button } from './ui/Button';
+import { useLanguage } from '../context/LanguageContext';
 
 export const MachineCard = ({ machine, onReport }) => {
+  const { t } = useLanguage();
   return (
     <Card className="overflow-hidden transition-all hover:shadow-md">
       <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
@@ -22,7 +24,7 @@ export const MachineCard = ({ machine, onReport }) => {
       <CardContent className="py-4">
         <div className="flex items-center gap-2 text-sm text-slate-500">
           <Clock className="h-4 w-4" />
-          Last Maintenance: {machine.lastMaintenance ? new Date(machine.lastMaintenance).toLocaleDateString() : 'Never'}
+          {t('lastMaintenance')}: {machine.last_maintenance ? new Date(machine.last_maintenance).toLocaleDateString() : t('never')}
         </div>
       </CardContent>
       <CardFooter className="flex gap-2 pt-0">
@@ -32,7 +34,7 @@ export const MachineCard = ({ machine, onReport }) => {
           onClick={() => onReport(machine)}
         >
           <AlertCircle className="mr-2 h-4 w-4" />
-          Report Issue
+          {t('reportIssue')}
         </Button>
         <Button variant="outline" size="icon">
           <MoreVertical className="h-4 w-4" />

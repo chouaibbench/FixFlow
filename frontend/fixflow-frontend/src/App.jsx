@@ -12,51 +12,55 @@ import { TechnicianLayout } from './layouts/TechnicianLayout';
 import { LoginPage } from './pages/LoginPage';
 import { WorkerDashboard } from './pages/worker/Dashboard';
 import { TechnicianDashboard } from './pages/technician/Dashboard';
+import { WorkerTickets } from './pages/worker/Tickets';
+import { LanguageProvider } from './context/LanguageContext';
 
 const App = () => {
   return (
-    <AuthProvider>
-      <TicketProvider>
-        <MachineProvider>
-        <Router>
-          <Toaster position="top-right" richColors />
-          <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            <Route
-              path="/worker"
-              element={
-                <ProtectedRoute allowedRoles={['worker']}>
-                  <WorkerLayout />
-                </ProtectedRoute>
-              }
-            >
-              <Route index element={<Navigate to="/worker/dashboard" replace />} />
-              <Route path="dashboard" element={<WorkerDashboard />} />
-              <Route path="machines" element={<div className="p-8 text-center">Worker Machines View (Coming Soon)</div>} />
-              <Route path="tickets" element={<div className="p-8 text-center">Worker Tickets View (Coming Soon)</div>} />
-            </Route>
-            <Route
-              path="/technician"
-              element={
-                <ProtectedRoute allowedRoles={['technician']}>
-                  <TechnicianLayout />
-                </ProtectedRoute>
-              }
-            >
-              <Route index element={<Navigate to="/technician/dashboard" replace />} />
-              <Route path="dashboard" element={<TechnicianDashboard />} />
-              <Route path="machines" element={<MachinesPage />} />
-              <Route path="tickets" element={<div className="p-8 text-center">Technician Tickets View (Coming Soon)</div>} />
-              <Route path="team" element={<div className="p-8 text-center">Technician Team View (Coming Soon)</div>} />
-              <Route path="settings" element={<div className="p-8 text-center">Technician Settings View (Coming Soon)</div>} />
-            </Route>
-            <Route path="/" element={<Navigate to="/login" replace />} />
-            <Route path="*" element={<Navigate to="/login" replace />} />
-          </Routes>
-        </Router>
-        </MachineProvider>
-      </TicketProvider>
-    </AuthProvider>
+    <LanguageProvider>
+      <AuthProvider>
+        <TicketProvider>
+          <MachineProvider>
+          <Router>
+            <Toaster position="top-right" richColors />
+            <Routes>
+              <Route path="/login" element={<LoginPage />} />
+              <Route
+                path="/worker"
+                element={
+                  <ProtectedRoute allowedRoles={['worker']}>
+                    <WorkerLayout />
+                  </ProtectedRoute>
+                }
+              >
+                <Route index element={<Navigate to="/worker/dashboard" replace />} />
+                <Route path="dashboard" element={<WorkerDashboard />} />
+                <Route path="machines" element={<div className="p-8 text-center">Worker Machines View (Coming Soon)</div>} />
+                <Route path="tickets" element={<WorkerTickets />} />
+              </Route>
+              <Route
+                path="/technician"
+                element={
+                  <ProtectedRoute allowedRoles={['technician']}>
+                    <TechnicianLayout />
+                  </ProtectedRoute>
+                }
+              >
+                <Route index element={<Navigate to="/technician/dashboard" replace />} />
+                <Route path="dashboard" element={<TechnicianDashboard />} />
+                <Route path="machines" element={<MachinesPage />} />
+                <Route path="tickets" element={<div className="p-8 text-center">Technician Tickets View (Coming Soon)</div>} />
+                <Route path="team" element={<div className="p-8 text-center">Technician Team View (Coming Soon)</div>} />
+                <Route path="settings" element={<div className="p-8 text-center">Technician Settings View (Coming Soon)</div>} />
+              </Route>
+              <Route path="/" element={<Navigate to="/login" replace />} />
+              <Route path="*" element={<Navigate to="/login" replace />} />
+            </Routes>
+          </Router>
+          </MachineProvider>
+        </TicketProvider>
+      </AuthProvider>
+    </LanguageProvider>
   );
 };
 

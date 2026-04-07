@@ -1,14 +1,17 @@
 import React from 'react';
-import { Outlet, Link, useNavigate } from 'react-router-dom';
+import { Outlet, Link, NavLink, useNavigate } from 'react-router-dom';
 import { Wrench, LogOut, Bell } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Avatar } from '../components/ui/Avatar';
 import { ThemeToggle } from '../components/ui/ThemeToggle';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 
 export const WorkerLayout = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const { t, toggleLang, lang } = useLanguage();
+
 
   const handleLogout = () => {
     logout();
@@ -29,6 +32,9 @@ export const WorkerLayout = () => {
             </div>
           </Link>
           <div className="flex items-center gap-2 sm:gap-4">
+            <button onClick={toggleLang} className="px-2 py-1 text-xs font-bold rounded border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800">
+              {lang === 'en' ? 'ع' : 'EN'}
+            </button>
             <ThemeToggle />
             <Button variant="ghost" size="icon" className="relative">
               <Bell className="h-5 w-5" />
@@ -47,6 +53,13 @@ export const WorkerLayout = () => {
           </div>
         </div>
       </header>
+      <nav className="border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+        <div className="mx-auto flex max-w-7xl gap-1 px-4 sm:px-6 lg:px-8">
+          <NavLink to="/worker/dashboard" className={({ isActive }) => `px-4 py-3 text-sm font-medium border-b-2 ${isActive ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-600 hover:text-indigo-600 dark:text-slate-400'}`}>{t('dashboard')}</NavLink>
+          <NavLink to="/worker/tickets" className={({ isActive }) => `px-4 py-3 text-sm font-medium border-b-2 ${isActive ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-600 hover:text-indigo-600 dark:text-slate-400'}`}>{t('myTickets')}</NavLink>
+          <NavLink to="/worker/machines" className={({ isActive }) => `px-4 py-3 text-sm font-medium border-b-2 ${isActive ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-600 hover:text-indigo-600 dark:text-slate-400'}`}>{t('machines')}</NavLink>
+        </div>
+      </nav>
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <Outlet />
       </main>

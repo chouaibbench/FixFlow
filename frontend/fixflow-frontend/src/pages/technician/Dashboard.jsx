@@ -10,10 +10,12 @@ import { Button } from '../../components/ui/Button';
 import { Avatar } from '../../components/ui/Avatar';
 import { cn } from '../../lib/utils';
 import { useTickets } from '../../context/TicketContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 export const TechnicianDashboard = () => {
   const { machines } = useMachines();
   const { tickets, updateTicketStatus, assignTicket } = useTickets();
+  const { t } = useLanguage();
   const machinesWithIssues = new Set(tickets.filter(t => t.status !== 'resolved').map(t => t.machine_id));
   const machinesOnline = machines.length - machinesWithIssues.size;
   const [activeTab, setActiveTab] = useState('all');
@@ -31,24 +33,24 @@ export const TechnicianDashboard = () => {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-3xl font-bold tracking-tight">Maintenance Dashboard</h2>
-        <p className="text-slate-500">Manage active maintenance tickets and monitor machine health.</p>
+        <h2 className="text-3xl font-bold tracking-tight">{t('maintenanceDashboard')}</h2>
+        <p className="text-slate-500">{t('maintenanceDashboardDesc')}</p>
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card className="bg-indigo-600 text-white">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium opacity-80">Active Tickets</CardTitle>
+            <CardTitle className="text-sm font-medium opacity-80">{t('activeTickets')}</CardTitle>
             <TicketIcon className="h-4 w-4 opacity-80" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{tickets.filter((t) => t.status !== 'resolved').length}</div>
-            <p className="text-xs opacity-70">Updated in real-time</p>
+            <p className="text-xs opacity-70">{t('updatedRealTime')}</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-slate-500">Machines Online</CardTitle>
+            <CardTitle className="text-sm font-medium text-slate-500">{t('machinesOnline')}</CardTitle>
             <Factory className="h-4 w-4 text-slate-500" />
           </CardHeader>
           <CardContent>
@@ -58,22 +60,22 @@ export const TechnicianDashboard = () => {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-slate-500">Avg. Resolution</CardTitle>
+            <CardTitle className="text-sm font-medium text-slate-500">{t('avgResolution')}</CardTitle>
             <Clock className="h-4 w-4 text-slate-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">2.4 hrs</div>
-            <p className="text-xs text-emerald-500">based on resolved tickets</p>
+            <p className="text-xs text-emerald-500">{t('basedOnResolved')}</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-slate-500">Critical Issues</CardTitle>
+            <CardTitle className="text-sm font-medium text-slate-500">{t('criticalIssues')}</CardTitle>
             <AlertTriangle className="h-4 w-4 text-red-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-red-500">{tickets.filter((t) => t.priority === 'critical').length}</div>
-            <p className="text-xs text-slate-500">Requires immediate action</p>
+            <p className="text-xs text-slate-500">{t('requiresAction')}</p>
           </CardContent>
         </Card>
       </div>
@@ -81,13 +83,13 @@ export const TechnicianDashboard = () => {
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-6">
           <div className="flex items-center justify-between">
-            <h3 className="text-xl font-bold">Maintenance Tickets</h3>
+            <h3 className="text-xl font-bold">{t('maintenanceTickets')}</h3>
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-auto">
               <TabsList className="bg-slate-100 dark:bg-slate-900">
-                <TabsTrigger value="all">All</TabsTrigger>
-                <TabsTrigger value="pending">Pending</TabsTrigger>
-                <TabsTrigger value="in-progress">Active</TabsTrigger>
-                <TabsTrigger value="resolved">Resolved</TabsTrigger>
+                <TabsTrigger value="all">{t('all')}</TabsTrigger>
+                <TabsTrigger value="pending">{t('pending')}</TabsTrigger>
+                <TabsTrigger value="in-progress">{t('active')}</TabsTrigger>
+                <TabsTrigger value="resolved">{t('resolved')}</TabsTrigger>
               </TabsList>
             </Tabs>
           </div>

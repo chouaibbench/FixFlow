@@ -6,12 +6,14 @@ import { Avatar } from '../components/ui/Avatar';
 import { ThemeToggle } from '../components/ui/ThemeToggle';
 import { useAuth } from '../context/AuthContext';
 import { cn } from '../lib/utils';
+import { useLanguage } from '../context/LanguageContext';
 
 export const TechnicianLayout = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
+  const { t, toggleLang, lang } = useLanguage();
 
   const handleLogout = () => {
     logout();
@@ -19,9 +21,9 @@ export const TechnicianLayout = () => {
   };
 
   const navItems = [
-    { name: 'Dashboard', path: '/technician/dashboard', icon: LayoutDashboard },
-    { name: 'Machines', path: '/technician/machines', icon: Factory },
-    { name: 'Tickets', path: '/technician/tickets', icon: TicketIcon },
+    { name: t('dashboard'), path: '/technician/dashboard', icon: LayoutDashboard },
+    { name: t('machines'), path: '/technician/machines', icon: Factory },
+    { name: t('tickets'), path: '/technician/tickets', icon: TicketIcon },
     { name: 'Technicians', path: '/technician/team', icon: Users },
     { name: 'Settings', path: '/technician/settings', icon: Settings },
   ];
@@ -63,6 +65,9 @@ export const TechnicianLayout = () => {
                 <p className="truncate text-sm font-bold">{user?.name}</p>
                 <p className="truncate text-xs text-slate-500">{user?.email}</p>
               </div>
+              <button onClick={toggleLang} className="px-2 py-1 text-xs font-bold rounded border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800">
+                {lang === 'en' ? 'ع' : 'EN'}
+              </button>
               <Button variant="ghost" size="icon" onClick={handleLogout} title="Logout">
                 <LogOut className="h-5 w-5 text-slate-500" />
               </Button>
@@ -83,6 +88,9 @@ export const TechnicianLayout = () => {
         </div>
         <div className="flex items-center gap-2">
           <ThemeToggle />
+          <button onClick={toggleLang} className="px-2 py-1 text-xs font-bold rounded border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800">
+            {lang === 'en' ? 'ع' : 'EN'}
+          </button>
           <Button variant="ghost" size="icon">
             <Bell className="h-5 w-5" />
           </Button>
