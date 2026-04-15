@@ -25,6 +25,13 @@ class DatabaseSeeder extends Seeder
             'role'     => 'technician',
         ]);
 
+        User::updateOrCreate(['email' => 'admin@fixflow.com'], [
+            'name'     => 'Admin',
+            'email'    => 'admin@fixflow.com',
+            'password' => Hash::make('password123'),
+            'role'     => 'admin',
+        ]);
+
         $machines = [
             ['name' => 'CNC Machine A1',      'location' => 'Workshop Floor 1', 'last_maintenance' => '2026-03-01'],
             ['name' => 'Hydraulic Press B2',  'location' => 'Workshop Floor 2', 'last_maintenance' => '2026-02-15'],

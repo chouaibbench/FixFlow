@@ -1,0 +1,13 @@
+# Frontend
+node_modules/
+client/dist/
+
+# Backend
+fixflow-backend/.env
+fixflow-backend/vendor/
+fixflow-backend/storage/logs/*.log
+fixflow-backend/database/database.sqlite
+
+# General
+.env
+*.sqlite

@@ -1,7 +1,0 @@
-{
-  "name": "FixFlow QR Maintenance",
-  "description": "A professional QR-based maintenance ticketing system for factories. Workers scan machines to report issues, and technicians manage tickets in real-time.",
-  "requestFramePermissions": [
-    "camera"
-  ]
-}

@@ -2,10 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
-Route::get('/login', function () {
-    return response()->json(['message' => 'Unauthenticated.'], 401);
-})->name('login');
+// Catch-all: serve the React SPA for every non-API route
+Route::get('/{any?}', function () {
+    return view('app');
+})->where('any', '^(?!api).*');
