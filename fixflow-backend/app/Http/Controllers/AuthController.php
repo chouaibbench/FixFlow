@@ -59,6 +59,14 @@ class AuthController extends Controller
         return response()->json(['message' => 'Logged out']);
     }
 
+    public function toggleOnline(Request $request)
+    {
+        $user = $request->user();
+        $user->is_online = !$user->is_online;
+        $user->save();
+        return response()->json(['is_online' => $user->is_online]);
+    }
+
     public function me(Request $request)
     {
         return response()->json($request->user());
