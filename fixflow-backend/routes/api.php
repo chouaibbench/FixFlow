@@ -16,6 +16,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me',      [AuthController::class, 'me']);
     Route::post('/users/toggle-online', [AuthController::class, 'toggleOnline']);
     Route::get('/logs', fn() => response()->json(\App\Models\Log::latest()->take(20)->get()));
+    Route::get('/supervisor', fn() => response()->json(\App\Models\User::where('role', 'admin')->first()));
 
     Route::apiResource('machines', MachineController::class);
     Route::apiResource('tickets',  TiketController::class);
