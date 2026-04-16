@@ -22,11 +22,11 @@ export const TechnicianDashboard = () => {
   const [activeTab, setActiveTab] = useState('all');
   const [activityLogs, setActivityLogs] = useState([]);
   const [showAllLogs, setShowAllLogs] = useState(false);
+  const [supervisor, setSupervisor] = useState(null);
 
   useEffect(() => {
-    api.get('/logs')
-      .then(setActivityLogs)
-      .catch(() => {});
+    api.get('/logs').then(setActivityLogs).catch(() => {});
+    api.get('/supervisor').then(setSupervisor).catch(() => {});
   }, []);
 
   const filteredTickets = tickets.filter((t) => {
@@ -140,10 +140,10 @@ export const TechnicianDashboard = () => {
               <CardDescription className="text-indigo-100">{t('contactSupervisor')}</CardDescription>
             </CardHeader>
             <CardContent className="flex items-center gap-4">
-              <Avatar src="https://api.dicebear.com/7.x/avataaars/svg?seed=Robert" fallback="RB" className="h-12 w-12 border-2 border-white/20" />
+              <Avatar src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(supervisor?.email ?? 'admin')}`} fallback="AD" className="h-12 w-12 border-2 border-white/20" />
               <div>
-                <p className="font-bold">Robert Brown</p>
-                <p className="text-xs text-indigo-100">Shift Supervisor • Ext. 402</p>
+                <p className="font-bold">{supervisor?.name ?? 'Admin'}</p>
+                <p className="text-xs text-indigo-100">Shift Supervisor{supervisor?.phone ? ` • ${supervisor.phone}` : ''}</p>
               </div>
             </CardContent>
             <CardFooter>

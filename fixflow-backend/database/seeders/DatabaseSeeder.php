@@ -30,6 +30,7 @@ class DatabaseSeeder extends Seeder
             'email'    => 'admin@fixflow.com',
             'password' => Hash::make('password123'),
             'role'     => 'admin',
+            'phone'    => '+212 656 819 828',
         ]);
 
         $machines = [
