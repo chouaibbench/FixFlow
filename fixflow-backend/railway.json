@@ -3,6 +3,6 @@
         "builder": "RAILPACK"
     },
     "deploy": {
-        "startCommand": "rm -f bootstrap/cache/config.php bootstrap/cache/events.php bootstrap/cache/routes-v7.php bootstrap/cache/compiled.php && php artisan migrate --force && php artisan db:seed --force && /start-container.sh"
+        "startCommand": "rm -f bootstrap/cache/*.php && php artisan migrate --force && php artisan db:seed --force && /start-container.sh"
     }
 }
