@@ -39,12 +39,16 @@ class TiketController extends Controller
         return response()->json($ticket->load(['machine', 'reporter']), 201);
     }
 
-    public function update(Request $request, Ticket $ticket)
-    {
+   public function update(Request $request, Ticket $ticket)
+   {
         $old = $ticket->status;
         $ticket->update($request->only('status', 'assigned_to', 'priority'));
 
         if ($request->has('status') && $old !== $request->status) {
+            if ($request->status === 'resolved') {
+                $ticket->machine->update(['last_maintenance' => now()->toDateString()]);
+            }
+
             Log::create([
                 'description' => "Ticket #{$ticket->id} ({$ticket->machine->name}) changed from {$old} to {$request->status}",
                 'user_id'     => $request->user()->id,
@@ -52,7 +56,8 @@ class TiketController extends Controller
         }
 
         return response()->json($ticket->load(['machine', 'reporter', 'assignee']));
-    }
+   }
+
 
     public function destroy(Ticket $ticket)
     {
