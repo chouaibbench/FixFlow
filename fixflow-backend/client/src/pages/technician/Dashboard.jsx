@@ -147,7 +147,7 @@ export const TechnicianDashboard = () => {
               </div>
             </CardContent>
             <CardFooter>
-              <Button className="w-full bg-white text-indigo-600 hover:bg-indigo-50">{t('callSupervisor')}</Button>
+              <Button className="w-full bg-white text-indigo-600 hover:bg-indigo-50" onClick={() => supervisor?.phone && window.open(`tel:${supervisor.phone}`)}>{t('callSupervisor')}</Button>
             </CardFooter>
           </Card>
         </div>
