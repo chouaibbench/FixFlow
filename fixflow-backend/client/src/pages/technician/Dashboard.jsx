@@ -19,6 +19,8 @@ export const TechnicianDashboard = () => {
   const { t } = useLanguage();
   const machinesWithIssues = new Set(tickets.filter(t => t.status !== 'resolved').map(t => t.machine_id));
   const machinesOnline = machines.length - machinesWithIssues.size;
+  const resolvedTickets = tickets.filter(t => t.status === 'resolved' && t.createdAt && t.updatedAt);
+  const avgResolution = resolvedTickets.length  ? (resolvedTickets.reduce((sum, t) => sum + (new Date(t.updatedAt) - new Date(t.createdAt)) / 3600000, 0) / resolvedTickets.length).toFixed(1) : '-';
   const [activeTab, setActiveTab] = useState('all');
   const [activityLogs, setActivityLogs] = useState([]);
   const [showAllLogs, setShowAllLogs] = useState(false);
@@ -73,7 +75,7 @@ export const TechnicianDashboard = () => {
             <Clock className="h-4 w-4 text-slate-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">2.4 hrs</div>
+            <div className="text-2xl font-bold">{avgResolution} hrs</div>
             <p className="text-xs text-emerald-500">{t('basedOnResolved')}</p>
           </CardContent>
         </Card>
@@ -102,7 +104,7 @@ export const TechnicianDashboard = () => {
               </TabsList>
             </Tabs>
           </div>
-          <TicketList tickets={filteredTickets} onUpdateStatus={handleUpdateTicketStatus} onAssign={assignTicket} readonly />
+          <TicketList tickets={filteredTickets} onUpdateStatus={handleUpdateTicketStatus} onAssign={assignTicket} />
         </div>
 
         <div className="space-y-6">

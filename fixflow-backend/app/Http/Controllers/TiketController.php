@@ -39,6 +39,11 @@ class TiketController extends Controller
         return response()->json($ticket->load(['machine', 'reporter']), 201);
     }
 
+    public function show(Ticket $ticket)
+    {
+        return response()->json($ticket->load(['machine', 'reporter', 'assignee' ]));
+    }
+
    public function update(Request $request, Ticket $ticket)
    {
         $old = $ticket->status;

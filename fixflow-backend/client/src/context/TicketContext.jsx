@@ -11,6 +11,7 @@ const normalize = (t) => ({
   reportedByEmail: t.reporter?.email  ?? t.reportedByEmail ?? '',
   assignedTo:      t.assignee?.name   ?? t.assignedTo      ?? null,
   createdAt:       t.created_at       ?? t.createdAt,
+  updatedAt:       t.updated_at       ?? t.updatedAt,
 });
 
 export const TicketProvider = ({ children }) => {
