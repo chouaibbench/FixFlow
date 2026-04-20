@@ -9,6 +9,7 @@ import { AdminLayout } from './layouts/AdminLayout';
 import { AdminDashboard } from './pages/admin/Dashboard';
 import { MachinesPage} from './pages/technician/Machines'
 import { TechnicianTeam } from './pages/technician/Team';
+import { TechnicianSettings } from './pages/technician/Settings';
 import { AuthProvider } from './context/AuthContext';
 import { TicketProvider } from './context/TicketContext';
 import { MachineProvider } from './context/MachineContext';
@@ -59,7 +60,7 @@ const App = () => {
                 <Route path="machines" element={<MachinesPage />} />
                 <Route path="tickets" element={ <TechnicianTikets/>} />
                 <Route path="team" element={<TechnicianTeam/>}/>
-                <Route path="settings" element={<div className="p-8 text-center">Technician Settings View (Coming Soon)</div>} />
+                <Route path="settings" element={<TechnicianSettings />} />
               </Route>
               <Route
                 path="/admin"
