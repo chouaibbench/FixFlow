@@ -10,6 +10,7 @@ export const TechnicianSettings = () => {
     const { user, setUser } = useAuth();
     const [name, setName] = useState(user?.name ?? '');
     const [email, setEmail] = useState(user?.email ?? '');
+    const [isEditing, setIsEditing] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [status, setStatus] = useState({ type: '', message: '' });
 
@@ -21,11 +22,19 @@ export const TechnicianSettings = () => {
             const updated = await api.put(`/users/${user.id}`, { name, email });
             setUser(updated);
             setStatus({ type: 'success', message: 'Profile updated successfully' });
+            setIsEditing(false);
         } catch (err) {
             setStatus({ type: 'error', message: err.message ?? 'Failed to update profile' });
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const handleCancel = () => {
+        setName(user?.name ?? '');
+        setEmail(user?.email ?? '');
+        setStatus({ type: '', message: '' });
+        setIsEditing(false);
     };
 
     return (
@@ -62,6 +71,7 @@ export const TechnicianSettings = () => {
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
                                     placeholder="Enter your name"
+                                    disabled={!isEditing}
                                     required
                                 />
                             </div>
@@ -74,6 +84,7 @@ export const TechnicianSettings = () => {
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     placeholder="Enter your email"
+                                    disabled={!isEditing}
                                     required
                                 />
                             </div>
@@ -91,18 +102,18 @@ export const TechnicianSettings = () => {
                         )}
 
                         <div className="flex gap-3">
-                            <Button type="submit" isLoading={isLoading}>Save Changes</Button>
-                            <Button
-                                type="button"
-                                variant="outline"
-                                onClick={() => {
-                                    setName(user?.name ?? '');
-                                    setEmail(user?.email ?? '');
-                                    setStatus({ type: '', message: '' });
-                                }}
-                            >
-                                Cancel
-                            </Button>
+                            {!isEditing ? (
+                                <Button type="button" onClick={() => setIsEditing(true)}>
+                                    Edit Profile
+                                </Button>
+                            ) : (
+                                <>
+                                    <Button type="submit" isLoading={isLoading}>Save Changes</Button>
+                                    <Button type="button" variant="outline" onClick={handleCancel}>
+                                        Cancel
+                                    </Button>
+                                </>
+                            )}
                         </div>
                     </form>
                 </CardContent>
