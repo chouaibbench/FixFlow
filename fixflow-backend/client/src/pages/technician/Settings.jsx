@@ -50,6 +50,13 @@ export const TechnicianSettings = () => {
                     <CardDescription>Update your personal details and contact information</CardDescription>
                 </CardHeader>
                 <CardContent>
+                    {!isEditing && (
+                        <div className="mb-6">
+                            <Button type="button" onClick={() => { setIsEditing(true); setStatus({ type: '', message: '' }); }}>
+                                Edit Profile
+                            </Button>
+                        </div>
+                    )}
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="flex items-center gap-6">
                             <Avatar
@@ -102,11 +109,7 @@ export const TechnicianSettings = () => {
                         )}
 
                         <div className="flex gap-3">
-                            {!isEditing ? (
-                                <Button type="button" onClick={() => { setIsEditing(true); setStatus({ type: '', message: '' }); }}>
-                                    Edit Profile
-                                </Button>
-                            ) : (
+                            {isEditing && (
                                 <>
                                     <Button type="submit" isLoading={isLoading}>Save Changes</Button>
                                     <Button type="button" variant="outline" onClick={handleCancel}>
