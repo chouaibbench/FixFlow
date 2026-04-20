@@ -103,7 +103,7 @@ export const TechnicianSettings = () => {
 
                         <div className="flex gap-3">
                             {!isEditing ? (
-                                <Button type="button" onClick={() => setIsEditing(true)}>
+                                <Button type="button" onClick={() => { setIsEditing(true); setStatus({ type: '', message: '' }); }}>
                                     Edit Profile
                                 </Button>
                             ) : (
