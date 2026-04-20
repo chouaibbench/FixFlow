@@ -10,6 +10,7 @@ import { AdminDashboard } from './pages/admin/Dashboard';
 import { MachinesPage} from './pages/technician/Machines'
 import { TechnicianTeam } from './pages/technician/Team';
 import { TechnicianSettings } from './pages/technician/Settings';
+import { WorkerSettings } from './pages/worker/Settings';
 import { AuthProvider } from './context/AuthContext';
 import { TicketProvider } from './context/TicketContext';
 import { MachineProvider } from './context/MachineContext';
@@ -44,8 +45,8 @@ const App = () => {
               >
                 <Route index element={<Navigate to="/worker/dashboard" replace />} />
                 <Route path="dashboard" element={<WorkerDashboard />} />
-                <Route path="machines" element={<div className="p-8 text-center">Worker Machines View (Coming Soon)</div>} />
                 <Route path="tickets" element={<WorkerTickets />} />
+                <Route path="settings" element={<WorkerSettings/>} />
               </Route>
               <Route
                 path="/technician"
