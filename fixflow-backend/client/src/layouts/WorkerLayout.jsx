@@ -91,7 +91,7 @@ export const WorkerLayout = () => {
         <div className="mx-auto flex max-w-7xl gap-1 px-4 sm:px-6 lg:px-8">
           <NavLink to="/worker/dashboard" className={({ isActive }) => `px-4 py-3 text-sm font-medium border-b-2 ${isActive ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-600 hover:text-indigo-600 dark:text-slate-400'}`}>{t('dashboard')}</NavLink>
           <NavLink to="/worker/tickets" className={({ isActive }) => `px-4 py-3 text-sm font-medium border-b-2 ${isActive ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-600 hover:text-indigo-600 dark:text-slate-400'}`}>{t('myTickets')}</NavLink>
-          <NavLink to="/worker/machines" className={({ isActive }) => `px-4 py-3 text-sm font-medium border-b-2 ${isActive ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-600 hover:text-indigo-600 dark:text-slate-400'}`}>{t('machines')}</NavLink>
+          <NavLink to="/worker/settings" className={({ isActive }) => `px-4 py-3 text-sm font-medium border-b-2 ${isActive ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-600 hover:text-indigo-600 dark:text-slate-400'}`}>{t('settings')}</NavLink>
         </div>
       </nav>
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
