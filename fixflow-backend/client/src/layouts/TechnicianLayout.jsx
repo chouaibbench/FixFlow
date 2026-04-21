@@ -249,6 +249,7 @@ export const TechnicianLayout = () => {
                     </div>
                   )}
                 </div>
+                <Button variant="ghost" size="icon" onClick={handleLogout} title="Logout">
                   <LogOut className="h-5 w-5 text-slate-500" />
                 </Button>
               </div>
