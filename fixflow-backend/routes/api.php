@@ -19,7 +19,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me',      [AuthController::class, 'me']);
     Route::post('/users/toggle-online', [AuthController::class, 'toggleOnline']);
-    Route::get('/logs', fn() => response()->json(\App\Models\Log::latest()->take(20)->get()));
     Route::get('/supervisor', fn() => response()->json(\App\Models\User::where('role', 'admin')->first()));
     
     // Admin routes
@@ -34,10 +33,13 @@ Route::middleware('auth:sanctum')->group(function () {
             'resolved_tickets' => \App\Models\Ticket::where('status', 'resolved')->count(),
         ]);
     });
-    Route::get('/admin/logs', fn() => response()->json(\App\Models\Log::latest()->take(50)->get()));
+    Route::get('/admin/logs', fn() => response()->json(\App\Models\Log::with('user')->latest()->take(50)->get()));
     Route::apiResource('users', \App\Http\Controllers\UserController::class);
 
+    Route::get('/machines/stats', [MachineController::class, 'stats']);
+    Route::get('/machines/{machine}/history', [MachineController::class, 'history']);
     Route::apiResource('machines', MachineController::class);
     Route::apiResource('tickets',  TiketController::class);
+    Route::get('/logs', fn() => response()->json(\App\Models\Log::with('user')->latest()->take(20)->get()));
 
 });

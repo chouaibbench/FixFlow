@@ -1,11 +1,11 @@
 import React from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { MapPin, Clock, MoreVertical, AlertCircle } from 'lucide-react';
+import { MapPin, Clock, AlertCircle, History } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from './ui/Card';
 import { Button } from './ui/Button';
 import { useLanguage } from '../context/LanguageContext';
 
-export const MachineCard = ({ machine, onReport }) => {
+export const MachineCard = ({ machine, onReport, onHistory }) => {
   const { t } = useLanguage();
   return (
     <Card className="overflow-hidden transition-all hover:shadow-md">
@@ -18,7 +18,7 @@ export const MachineCard = ({ machine, onReport }) => {
           </CardDescription>
         </div>
         <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-slate-50 p-1 dark:bg-slate-900">
-          <QRCodeSVG value={machine.id} size={40} />
+          <QRCodeSVG value={String(machine.id)} size={40} />
         </div>
       </CardHeader>
       <CardContent className="py-4">
@@ -28,16 +28,18 @@ export const MachineCard = ({ machine, onReport }) => {
         </div>
       </CardContent>
       <CardFooter className="flex gap-2 pt-0">
+        {onHistory && (
+          <Button variant="outline" className="flex-1" onClick={() => onHistory(machine)}>
+            <History className="mr-2 h-4 w-4" />
+            {t('history')}
+          </Button>
+        )}
         <Button
-          variant="primary"
-          className="w-full bg-red-600 hover:bg-red-700"
+          className={`bg-red-600 hover:bg-red-700 ${onHistory ? 'flex-1' : 'w-full'}`}
           onClick={() => onReport(machine)}
         >
           <AlertCircle className="mr-2 h-4 w-4" />
           {t('reportIssue')}
-        </Button>
-        <Button variant="outline" size="icon">
-          <MoreVertical className="h-4 w-4" />
         </Button>
       </CardFooter>
     </Card>

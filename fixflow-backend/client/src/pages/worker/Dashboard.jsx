@@ -7,6 +7,7 @@ import { Button } from '../../components/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import { QRScanner } from '../../components/QRScanner';
 import { MachineCard } from '../../components/MachineCard';
+import { MachineHistory } from '../../components/MachineHistory';
 import { TicketForm } from '../../components/TicketForm';
 import { Dialog } from '../../components/ui/Dialog';
 import { useTickets } from '../../context/TicketContext';
@@ -22,8 +23,15 @@ export const WorkerDashboard = () => {
   const { t } = useLanguage();
   const machinesWithIssues = new Set(tickets.filter(t => t.status !== 'resolved').map(t => t.machine_id));
   const machinesOnline = machines.length - machinesWithIssues.size;
+
+  const resolvedTickets = tickets.filter(t => t.status === 'resolved' && t.createdAt && t.updatedAt);
+  const avgResolution = resolvedTickets.length
+    ? (resolvedTickets.reduce((sum, t) => sum + (new Date(t.updatedAt) - new Date(t.createdAt)) / 3600000, 0) / resolvedTickets.length).toFixed(1)
+    : null;
+
   const [isScannerOpen, setIsScannerOpen] = useState(false);
   const [selectedMachine, setSelectedMachine] = useState(null);
+  const [historyMachine, setHistoryMachine] = useState(null);
   const [isTicketFormOpen, setIsTicketFormOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -34,7 +42,7 @@ export const WorkerDashboard = () => {
   );
 
   const handleScan = (decodedText) => {
-    const machine = machines.find((m) => m.id === decodedText);
+    const machine = machines.find((m) => String(m.id) === decodedText);
     if (machine) {
       setSelectedMachine(machine);
       setIsScannerOpen(false);
@@ -64,6 +72,10 @@ export const WorkerDashboard = () => {
 
   return (
     <div className="space-y-8">
+      {historyMachine && (
+        <MachineHistory machine={historyMachine} onClose={() => setHistoryMachine(null)} />
+      )}
+
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="text-3xl font-bold tracking-tight">{t('reportAnIssue')}</h2>
@@ -98,12 +110,12 @@ export const WorkerDashboard = () => {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-slate-500">{t('avgResponseTime')}</CardTitle>
+            <CardTitle className="text-sm font-medium text-slate-500">{t('avgResolution')}</CardTitle>
             <Clock className="h-4 w-4 text-slate-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">45 mins</div>
-            <p className="text-xs text-emerald-500">-10% from last week</p>
+            <div className="text-2xl font-bold">{avgResolution ? `${avgResolution} hrs` : '-'}</div>
+            <p className="text-xs text-slate-500">{t('basedOnResolved')}</p>
           </CardContent>
         </Card>
       </div>
@@ -124,7 +136,12 @@ export const WorkerDashboard = () => {
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {filteredMachines.map((machine) => (
-            <MachineCard key={machine.id} machine={machine} onReport={handleReportIssue} />
+            <MachineCard
+              key={machine.id}
+              machine={machine}
+              onReport={handleReportIssue}
+              onHistory={setHistoryMachine}
+            />
           ))}
         </div>
       </div>

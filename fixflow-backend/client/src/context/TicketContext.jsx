@@ -6,12 +6,13 @@ const TicketContext = createContext(undefined);
 
 const normalize = (t) => ({
   ...t,
-  machineName:     t.machine?.name    ?? t.machineName     ?? '',
-  reportedBy:      t.reporter?.name   ?? t.reportedBy      ?? '',
-  reportedByEmail: t.reporter?.email  ?? t.reportedByEmail ?? '',
-  assignedTo:      t.assignee?.name   ?? t.assignedTo      ?? null,
-  createdAt:       t.created_at       ?? t.createdAt,
-  updatedAt:       t.updated_at       ?? t.updatedAt,
+  machineName:      t.machine?.name    ?? t.machineName     ?? '',
+  reportedBy:       t.reporter?.name   ?? t.reportedBy      ?? '',
+  reportedByEmail:  t.reporter?.email  ?? t.reportedByEmail ?? '',
+  assignedTo:       t.assignee?.name   ?? t.assignedTo      ?? null,
+  resolutionNotes:  t.resolution_notes ?? t.resolutionNotes ?? null,
+  createdAt:        t.created_at       ?? t.createdAt,
+  updatedAt:        t.updated_at       ?? t.updatedAt,
 });
 
 export const TicketProvider = ({ children }) => {
@@ -38,8 +39,10 @@ export const TicketProvider = ({ children }) => {
     return newTicket;
   };
 
-  const updateTicketStatus = async (ticketId, status) => {
-    const updated = await api.put(`/tickets/${ticketId}`, { status });
+  const updateTicketStatus = async (ticketId, status, resolutionNotes = null) => {
+    const payload = { status };
+    if (resolutionNotes) payload.resolution_notes = resolutionNotes;
+    const updated = await api.put(`/tickets/${ticketId}`, payload);
     setTickets((prev) => prev.map((t) => (t.id === ticketId ? normalize(updated) : t)));
   };
 

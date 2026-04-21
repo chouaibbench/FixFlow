@@ -31,38 +31,65 @@ class TiketController extends Controller
             'status'      => 'pending',
         ]);
 
-        Log::create([
-            'description' => "Ticket #{$ticket->id} created for machine {$ticket->machine->name}",
-            'user_id'     => $request->user()->id,
-        ]);
+        Log::record(
+            'created',
+            "Ticket #{$ticket->id} created for machine {$ticket->machine->name} by {$request->user()->name}",
+            $request->user()->id,
+            $ticket->id,
+            $ticket->machine_id
+        );
 
         return response()->json($ticket->load(['machine', 'reporter']), 201);
     }
 
     public function show(Ticket $ticket)
     {
-        return response()->json($ticket->load(['machine', 'reporter', 'assignee' ]));
+        return response()->json($ticket->load(['machine', 'reporter', 'assignee']));
     }
 
-   public function update(Request $request, Ticket $ticket)
-   {
-        $old = $ticket->status;
-        $ticket->update($request->only('status', 'assigned_to', 'priority'));
+    public function update(Request $request, Ticket $ticket)
+    {
+        $request->validate([
+            'assigned_to' => 'nullable|exists:users,id',
+            'status'      => 'nullable|in:pending,in-progress,resolved',
+            'priority'    => 'nullable|in:low,medium,high,critical',
+            'resolution_notes' => 'nullable|string',
+        ]);
 
-        if ($request->has('status') && $old !== $request->status) {
+        $oldStatus     = $ticket->status;
+        $oldAssignedTo = $ticket->assigned_to;
+
+        $ticket->update($request->only('status', 'assigned_to', 'priority', 'resolution_notes'));
+
+        // Log assignment change
+        if ($request->has('assigned_to') && $oldAssignedTo !== $request->assigned_to) {
+            $assignee = \App\Models\User::find($request->assigned_to);
+            Log::record(
+                'assigned',
+                "Ticket #{$ticket->id} ({$ticket->machine->name}) assigned to " . ($assignee?->name ?? 'nobody'),
+                $request->user()->id,
+                $ticket->id,
+                $ticket->machine_id
+            );
+        }
+
+        // Log status change
+        if ($request->has('status') && $oldStatus !== $request->status) {
             if ($request->status === 'resolved') {
                 $ticket->machine->update(['last_maintenance' => now()->toDateString()]);
             }
 
-            Log::create([
-                'description' => "Ticket #{$ticket->id} ({$ticket->machine->name}) changed from {$old} to {$request->status}",
-                'user_id'     => $request->user()->id,
-            ]);
+            Log::record(
+                $request->status === 'resolved' ? 'resolved' : 'status_changed',
+                "Ticket #{$ticket->id} ({$ticket->machine->name}) status changed from {$oldStatus} to {$request->status} by {$request->user()->name}",
+                $request->user()->id,
+                $ticket->id,
+                $ticket->machine_id
+            );
         }
 
         return response()->json($ticket->load(['machine', 'reporter', 'assignee']));
-   }
-
+    }
 
     public function destroy(Ticket $ticket)
     {

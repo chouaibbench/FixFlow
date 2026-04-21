@@ -20,6 +20,7 @@ class Ticket extends Model
         'priority',
         'status',
         'photo_url',
+        'resolution_notes',
     ];
 
     public function machine()

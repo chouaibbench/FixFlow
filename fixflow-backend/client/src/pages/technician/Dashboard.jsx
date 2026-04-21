@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Ticket as TicketIcon, Factory, Clock, AlertTriangle, CheckCircle2, Settings } from 'lucide-react';
+import { Ticket as TicketIcon, Factory, Clock, AlertTriangle, CheckCircle2, BarChart2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useMachines } from '../../context/MachineContext';
 import { api } from '../../lib/api';
@@ -9,6 +9,7 @@ import { Tabs, TabsList, TabsTrigger } from '../../components/ui/Tabs';
 import { TicketList } from '../../components/TicketList';
 import { Button } from '../../components/ui/Button';
 import { Avatar } from '../../components/ui/Avatar';
+import { Badge } from '../../components/ui/Badge';
 import { cn, getExpiryMessage } from '../../lib/utils';
 import { useTickets } from '../../context/TicketContext';
 import { useLanguage } from '../../context/LanguageContext';
@@ -25,10 +26,12 @@ export const TechnicianDashboard = () => {
   const [activityLogs, setActivityLogs] = useState([]);
   const [showAllLogs, setShowAllLogs] = useState(false);
   const [supervisor, setSupervisor] = useState(null);
+  const [machineStats, setMachineStats] = useState([]);
 
   useEffect(() => {
     api.get('/logs').then(setActivityLogs).catch(() => {});
     api.get('/supervisor').then(setSupervisor).catch(() => {});
+    api.get('/machines/stats').then(setMachineStats).catch(() => {});
   }, []);
 
   const filteredTickets = tickets.filter((t) => {
@@ -136,8 +139,38 @@ export const TechnicianDashboard = () => {
             </CardFooter>
           </Card>
 
-          <Card className="bg-gradient-to-br from-indigo-600 to-violet-700 text-white">
-            <CardHeader>
+          {machineStats.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <BarChart2 className="h-4 w-4 text-indigo-500" />
+                  {t('mostProblematic')}
+                </CardTitle>
+                <CardDescription>{t('byOpenTickets')}</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {machineStats.slice(0, 5).map((m, i) => (
+                  <div key={m.id} className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="text-xs font-bold text-slate-400 w-4">{i + 1}</span>
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-medium">{m.name}</p>
+                        <p className="text-xs text-slate-400">{m.location}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1 shrink-0">
+                      {m.open_tickets_count > 0 && (
+                        <Badge variant="destructive">{m.open_tickets_count} open</Badge>
+                      )}
+                      <span className="text-xs text-slate-400">{m.tickets_count} total</span>
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          )}
+
+          <Card className="bg-gradient-to-br from-indigo-600 to-violet-700 text-white">            <CardHeader>
               <CardTitle className="text-lg">{t('needHelp')}</CardTitle>
               <CardDescription className="text-indigo-100">{t('contactSupervisor')}</CardDescription>
             </CardHeader>
