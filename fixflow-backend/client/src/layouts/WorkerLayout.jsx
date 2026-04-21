@@ -11,9 +11,16 @@ import { useNotifications } from '../context/NotificationContext';
 export const WorkerLayout = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const { t, toggleLang, lang } = useLanguage();
+  const { t, changeLang, lang } = useLanguage();
   const { notifications, unreadCount, markAllRead, clearAll } = useNotifications();
   const [showNotifs, setShowNotifs] = useState(false);
+  const [showLangMenu, setShowLangMenu] = useState(false);
+
+  const LANGS = [
+    { code: 'en', label: 'EN', flag: '🇬🇧' },
+    { code: 'fr', label: 'FR', flag: '🇫🇷' },
+    { code: 'ar', label: 'ع', flag: '🇸🇦' },
+  ];
 
   const handleLogout = () => { logout(); navigate('/login'); };
 
@@ -36,9 +43,27 @@ export const WorkerLayout = () => {
             </div>
           </Link>
           <div className="flex items-center gap-2 sm:gap-4">
-            <button onClick={toggleLang} className="px-2 py-1 text-xs font-bold rounded border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800">
-              {lang === 'en' ? 'ع' : 'EN'}
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setShowLangMenu(prev => !prev)}
+                className="px-2 py-1 text-xs font-bold rounded border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 min-w-[36px]"
+              >
+                {LANGS.find(l => l.code === lang)?.flag} {LANGS.find(l => l.code === lang)?.label}
+              </button>
+              {showLangMenu && (
+                <div className="absolute right-0 top-9 z-50 w-32 rounded-lg border border-slate-200 bg-white shadow-lg dark:border-slate-700 dark:bg-slate-900">
+                  {LANGS.map(l => (
+                    <button
+                      key={l.code}
+                      onClick={() => { changeLang(l.code); setShowLangMenu(false); }}
+                      className={`flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-slate-50 dark:hover:bg-slate-800 ${lang === l.code ? 'font-bold text-indigo-600' : 'text-slate-700 dark:text-slate-300'}`}
+                    >
+                      <span>{l.flag}</span><span>{l.label}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
             <ThemeToggle />
             <Button variant="ghost" size="icon" className="relative" onClick={toggleNotifs}>
               <Bell className="h-5 w-5" />

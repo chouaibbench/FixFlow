@@ -15,9 +15,16 @@ export const TechnicianLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
-  const { t, toggleLang, lang } = useLanguage();
+  const { t, changeLang, lang } = useLanguage();
   const [isOnline, setIsOnline] = React.useState(false);
   const [needsAudioUnlock, setNeedsAudioUnlock] = React.useState(false);
+  const [showLangMenu, setShowLangMenu] = React.useState(false);
+
+  const LANGS = [
+    { code: 'en', label: 'EN', flag: '🇬🇧' },
+    { code: 'fr', label: 'FR', flag: '🇫🇷' },
+    { code: 'ar', label: 'ع', flag: '🇸🇦' },
+  ];
 
   const prevTicketIds = React.useRef(null);
   const audioRef = React.useRef(null);
@@ -224,10 +231,24 @@ export const TechnicianLayout = () => {
                   <p className="truncate text-sm font-bold">{user?.name}</p>
                   <p className="truncate text-xs text-slate-500">{user?.email}</p>
                 </div>
-                <button onClick={toggleLang} className="px-2 py-1 text-xs font-bold rounded border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800">
-                  {lang === 'en' ? 'ع' : 'EN'}
-                </button>
-                <Button variant="ghost" size="icon" onClick={handleLogout} title="Logout">
+                <div className="relative">
+                  <button
+                    onClick={() => setShowLangMenu(prev => !prev)}
+                    className="px-2 py-1 text-xs font-bold rounded border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800"
+                  >
+                    {LANGS.find(l => l.code === lang)?.flag}
+                  </button>
+                  {showLangMenu && (
+                    <div className="absolute bottom-8 right-0 z-50 w-32 rounded-lg border border-slate-200 bg-white shadow-lg dark:border-slate-700 dark:bg-slate-900">
+                      {LANGS.map(l => (
+                        <button key={l.code} onClick={() => { changeLang(l.code); setShowLangMenu(false); }}
+                          className={`flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-slate-50 dark:hover:bg-slate-800 ${lang === l.code ? 'font-bold text-indigo-600' : 'text-slate-700 dark:text-slate-300'}`}>
+                          <span>{l.flag}</span><span>{l.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
                   <LogOut className="h-5 w-5 text-slate-500" />
                 </Button>
               </div>
@@ -248,9 +269,24 @@ export const TechnicianLayout = () => {
         </div>
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          <button onClick={toggleLang} className="px-2 py-1 text-xs font-bold rounded border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800">
-            {lang === 'en' ? 'ع' : 'EN'}
-          </button>
+          <div className="relative">
+            <button
+              onClick={() => setShowLangMenu(prev => !prev)}
+              className="px-2 py-1 text-xs font-bold rounded border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800"
+            >
+              {LANGS.find(l => l.code === lang)?.flag}
+            </button>
+            {showLangMenu && (
+              <div className="absolute right-0 top-9 z-50 w-32 rounded-lg border border-slate-200 bg-white shadow-lg dark:border-slate-700 dark:bg-slate-900">
+                {LANGS.map(l => (
+                  <button key={l.code} onClick={() => { changeLang(l.code); setShowLangMenu(false); }}
+                    className={`flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-slate-50 dark:hover:bg-slate-800 ${lang === l.code ? 'font-bold text-indigo-600' : 'text-slate-700 dark:text-slate-300'}`}>
+                    <span>{l.flag}</span><span>{l.label}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
           <Button variant="ghost" size="icon">
             <Bell className="h-5 w-5" />
           </Button>
