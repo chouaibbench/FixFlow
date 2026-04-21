@@ -3,15 +3,25 @@ import { translations } from '../lib/translations';
 
 const LanguageContext = createContext(undefined);
 
-export const LanguageProvider = ({ children }) => {
-    const [lang, setLang] = useState('en');
+const SUPPORTED = ['en', 'fr', 'ar'];
 
-    const t = (key) => translations[lang][key] || key;
+export const LanguageProvider = ({ children }) => {
+    const [lang, setLang] = useState(() => {
+        const saved = localStorage.getItem('fixflow_lang');
+        return SUPPORTED.includes(saved) ? saved : 'en';
+    });
+
+    const changeLang = (newLang) => {
+        if (!SUPPORTED.includes(newLang)) return;
+        localStorage.setItem('fixflow_lang', newLang);
+        setLang(newLang);
+    };
+
+    const t = (key) => translations[lang]?.[key] ?? translations['en']?.[key] ?? key;
     const isRTL = lang === 'ar';
-    const toggleLang = () => setLang(prev => prev === 'en' ? 'ar' : 'en');
 
     return (
-        <LanguageContext.Provider value={{ lang, t, isRTL, toggleLang }}>
+        <LanguageContext.Provider value={{ lang, t, isRTL, changeLang, languages: SUPPORTED }}>
             <div dir={isRTL ? 'rtl' : 'ltr'}>
                 {children}
             </div>
@@ -21,6 +31,6 @@ export const LanguageProvider = ({ children }) => {
 
 export const useLanguage = () => {
     const context = useContext(LanguageContext);
-    if (context === undefined ) throw new Error('useLanguage must be used within a LanguageProvider')
+    if (context === undefined) throw new Error('useLanguage must be used within a LanguageProvider');
     return context;
 };

@@ -1,13 +1,16 @@
 import { useAuth } from "../../context/AuthContext";
+import { useLanguage } from "../../context/LanguageContext";
 import { api } from "../../lib/api";
 import { useState } from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "../../components/ui/Card";
 import { Input } from "../../components/ui/Input";
 import { Button } from "../../components/ui/Button";
 import { Avatar } from "../../components/ui/Avatar";
+import { LanguageSelector } from "../../components/LanguageSelector";
 
 export const WorkerSettings = () => {
     const { user, setUser } = useAuth();
+    const { t } = useLanguage();
     const [ name, setName ] = useState(user?.name ?? '');
     const [ email, setEmail ] = useState(user?.email ?? '');
     const [ isEditing, setIsEditing ] = useState(false);
@@ -40,21 +43,22 @@ export const WorkerSettings = () => {
     };
 
     return (
-        <div className="sapce-y-6 max-w-3xl">
+        <div className="space-y-6 max-w-3xl">
             <div>
-                <h2 className="text-3xl font-bold">Settings</h2>
-                <p className="text-slate-500 mt-1">Manage your account settings and perfermonces</p>
+                <h2 className="text-3xl font-bold">{t('settings')}</h2>
+                <p className="text-slate-500 mt-1">{t('settingsDesc')}</p>
             </div>
+
             <Card>
                 <CardHeader>
-                    <CardTitle>Profile Information</CardTitle>
-                    <CardDescription>Update your personal details and contact information</CardDescription>
+                    <CardTitle>{t('profileInformation')}</CardTitle>
+                    <CardDescription>{t('profileDesc')}</CardDescription>
                 </CardHeader>
                 <CardContent>
                     {!isEditing && (
                         <div className="mb-6">
                             <Button type="button" onClick={() => { setIsEditing(true); setStatus({ type: '', message: ''}); }}>
-                                Edit Profile
+                                {t('editProfile')}
                             </Button>
                         </div>
                     )}
@@ -66,22 +70,22 @@ export const WorkerSettings = () => {
                                 className="h-20 w-20"
                             />
                             <div>
-                                <p>Profile Picture</p>
-                                <p>Auto-generated based on your email</p>
+                                <p className="font-medium text-sm text-slate-700">{t('profilePicture')}</p>
+                                <p className="text-xs text-slate-500 mt-1">{t('profilePictureDesc')}</p>
                             </div>
                         </div>
 
                         <div className="space-y-4">
                             <div className="space-y-2">
-                                <label htmlFor="name" className="text-sm font-medium text-slate-700">Full Name</label>
-                                <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Enter your name" disabled={!isEditing} required />
+                                <label htmlFor="name" className="text-sm font-medium text-slate-700">{t('fullName')}</label>
+                                <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder={t('enterName')} disabled={!isEditing} required />
                             </div>
                             <div className="space-y-2">
-                                 <label htmlFor="email" className="text-sm font-medium text-slate-700">Email Address</label>
-                                 <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Enter your email" disabled={!isEditing} required />
+                                 <label htmlFor="email" className="text-sm font-medium text-slate-700">{t('email')}</label>
+                                 <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t('enterEmail')} disabled={!isEditing} required />
                             </div>
                             <div className="space-y-2">
-                                <label className="text-sm font-medium text-slate-700">Role</label>
+                                <label className="text-sm font-medium text-slate-700">{t('role')}</label>
                                 <Input value={user?.role ?? ''} disabled className="capitalize opacity-60" />
                             </div>
                         </div>
@@ -94,11 +98,21 @@ export const WorkerSettings = () => {
 
                         {isEditing && (
                             <div className="flex gap-3">
-                                <Button type="submit" isLoading={isLoading}>Save Changes</Button>
-                                <Button type="button" variant="outline" onClick={handleCancel}>Cancel</Button>
+                                <Button type="submit" isLoading={isLoading}>{t('update')}</Button>
+                                <Button type="button" variant="outline" onClick={handleCancel}>{t('cancel')}</Button>
                             </div>
                         )}
                     </form>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle>{t('language')}</CardTitle>
+                    <CardDescription>{t('languageDesc')}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <LanguageSelector />
                 </CardContent>
             </Card>
         </div>
