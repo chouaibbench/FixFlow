@@ -116,21 +116,43 @@ export const TechnicianDashboard = () => {
               <CardTitle className="text-lg">{t('recentActivity')}</CardTitle>
               <CardDescription>{t('latestUpdates')}</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
-              {(showAllLogs ? activityLogs : activityLogs.slice(0, 5)).map((log) => (
-                <div key={log.id} className="flex gap-4">
-                  <div className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-900 text-indigo-500">
-                    <Clock className="h-4 w-4 "/>
+            <CardContent className="space-y-4">
+              {(() => {
+                const logsToShow = showAllLogs ? activityLogs : activityLogs.slice(0, 8);
+                // Group by date MM/DD/YYYY
+                const groups = logsToShow.reduce((acc, log) => {
+                  const d = new Date(log.created_at);
+                  const key = `${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}/${d.getFullYear()}`;
+                  if (!acc[key]) acc[key] = [];
+                  acc[key].push(log);
+                  return acc;
+                }, {});
+
+                return Object.entries(groups).map(([date, logs]) => (
+                  <div key={date}>
+                    <div className="sticky top-0 mb-3 flex items-center gap-2">
+                      <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">{date}</span>
+                      <div className="flex-1 h-px bg-slate-100 dark:bg-slate-800" />
+                    </div>
+                    <div className="space-y-4">
+                      {logs.map((log) => (
+                        <div key={log.id} className="flex gap-3">
+                          <div className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-900 text-indigo-500">
+                            <Clock className="h-3.5 w-3.5" />
+                          </div>
+                          <div className="space-y-0.5">
+                            <p className="text-sm font-medium leading-snug">{log.description}</p>
+                            <p className="text-xs text-slate-400">
+                              {new Date(log.created_at).toLocaleTimeString()}
+                            </p>
+                            <p className="text-xs text-amber-500">{getExpiryMessage(log.created_at)}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium">{log.description}</p>
-                    <p className="text-xs text-slate-500">
-                      {new Date(log.created_at).toLocaleString()}
-                    </p>
-                    <p className="text-xs text-amber-500">{getExpiryMessage(log.created_at)}</p>
-                  </div>
-                </div>
-              ))}
+                ));
+              })()}
             </CardContent>
             <CardFooter>
               <Button variant="ghost" className="w-full text-xs text-indigo-600 dark:text-indigo-400" onClick={() => setShowAllLogs(prev => !prev)}>
